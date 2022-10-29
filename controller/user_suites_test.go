@@ -299,7 +299,7 @@ func (s *suiteUsers) TestLoginUser() {
 		s.T().Run(v.name, func(t *testing.T) {
 			expectRows := s.mock.NewRows([]string{"id", "email", "password"}).AddRow(1, "orang@test.com", "orang123")
 			s.mock.ExpectQuery(regexp.QuoteMeta("SELECT * FROM `users` WHERE (email = ? AND password = ?) AND `users`.`deleted_at` IS NULL ORDER BY `users`.`id` LIMIT 1")).
-				WithArgs("", "").
+				WithArgs("orang@test.com", "orang123").
 				WillReturnRows(expectRows)
 
 			res, _ := json.Marshal(v.body)
@@ -307,6 +307,7 @@ func (s *suiteUsers) TestLoginUser() {
 			w := httptest.NewRecorder()
 			ctx := echo.New().NewContext(r, w)
 			ctx.SetPath(v.path)
+			ctx.Request().Header.Set("Content-Type", "application/json")
 
 			if s.NoError(s.handler.LoginUser(ctx)) {
 				body := w.Body.Bytes()
