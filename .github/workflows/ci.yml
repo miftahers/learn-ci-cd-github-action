@@ -1,6 +1,6 @@
 name: ini cd golang
 on:
-  pull-request:
+  pull_requests:
     branches:
       - "master"
 jobs:
