@@ -53,5 +53,7 @@ jobs:
           key: ${{ secrets.AWS_KEY }}
           port: 22
           script: |
+            cd /home/ec2-user/learn-ci-cd-github-action
+            git pull https://github.com/miftahers/learn-ci-cd-github-action
             docker-compose down
             docker-compose up --build -d
