@@ -1,7 +1,6 @@
 package routes
 
 import (
-	"praktikum/config"
 	"praktikum/controller"
 	"praktikum/repository"
 	userv "praktikum/services"
@@ -25,7 +24,7 @@ func Init(db *gorm.DB) *echo.Echo {
 	handlerUser := controller.HandlerUser{
 		UserServices: services,
 	}
-	e.GET("/users", handlerUser.GetAllUsers, middleware.JWT([]byte(config.TokenSecret)))
+	e.GET("/users", handlerUser.GetAllUsers)
 	e.POST("/users/login", handlerUser.LoginUser)
 	e.POST("/users", handlerUser.CreateUser)
 
