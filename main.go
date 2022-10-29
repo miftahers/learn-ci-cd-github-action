@@ -11,5 +11,8 @@ func main() {
 
 	e := routes.Init(db)
 
-	e.Start(config.APIPort)
+	err := e.Start(config.APIPort)
+	if err != nil {
+		panic(err)
+	}
 }

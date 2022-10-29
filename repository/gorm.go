@@ -25,7 +25,10 @@ func (m *GormSql) GetAll() ([]model.User, error) {
 func (m *GormSql) SaveUser(c echo.Context) error {
 	var user model.User
 
-	c.Bind(&user)
+	err := c.Bind(&user)
+	if err != nil {
+		return err
+	}
 
 	if err := m.DB.Save(&user).Error; err != nil {
 		return err
@@ -35,9 +38,12 @@ func (m *GormSql) SaveUser(c echo.Context) error {
 }
 func (m *GormSql) Login(c echo.Context) (interface{}, error) {
 	var u model.User
-	c.Bind(&u)
+	err := c.Bind(&u)
+	if err != nil {
+		return nil, err
+	}
 
-	err := m.DB.Where("email = ? AND password = ?", u.Email, u.Password).First(&u).Error
+	err = m.DB.Where("email = ? AND password = ?", u.Email, u.Password).First(&u).Error
 	if err != nil {
 		return nil, err
 	}
