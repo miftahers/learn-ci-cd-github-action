@@ -93,8 +93,8 @@ func (s *suiteUsers) TestCreateUser() {
 	for _, v := range testCase {
 		s.T().Run(v.name, func(t *testing.T) {
 			s.mock.ExpectBegin()
-			s.mock.ExpectExec(regexp.QuoteMeta("INSERT INTO `users` (`created_at`,`updated_at`,`deleted_at`,`email`,`password`) VALUES (?,?,?,?,?)")).
-				WithArgs(AnyTime{}, AnyTime{}, nil, "", "").
+			s.mock.ExpectExec(regexp.QuoteMeta("UPDATE `users` SET `created_at`=?,`updated_at`=?,`deleted_at`=?,`email`=?,`password`=? WHERE `id` = ? AND `users`.`deleted_at` IS NULL")).
+				WithArgs(AnyTime{}, AnyTime{}, nil, "superb@test.com", "superb123", 1).
 				WillReturnResult(sqlmock.NewResult(1, 1))
 			s.mock.ExpectCommit()
 
@@ -152,8 +152,8 @@ func (s *suiteUsers) TestCreateUserError() {
 	for _, v := range testCase {
 		s.T().Run(v.name, func(t *testing.T) {
 			s.mock.ExpectBegin()
-			s.mock.ExpectExec(regexp.QuoteMeta("INSERT INTO `users` (`created_at`,`updated_at`,`deleted_at`,`email`,`password`) VALUES (?,?,?,?,?)")).
-				WithArgs(AnyTime{}, AnyTime{}, nil, "", "").
+			s.mock.ExpectExec(regexp.QuoteMeta("UPDATE `users` SET `created_at`=?,`updated_at`=?,`deleted_at`=?,`email`=?,`password`=? WHERE `id` = ? AND `users`.`deleted_at` IS NULL")).
+				WithArgs(AnyTime{}, AnyTime{}, nil, "superb@test.com", "superb123", 1).
 				WillReturnError(errors.New("Internal Server Error"))
 			s.mock.ExpectRollback()
 
