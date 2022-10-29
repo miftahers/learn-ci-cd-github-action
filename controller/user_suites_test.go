@@ -93,8 +93,8 @@ func (s *suiteUsers) TestCreateUser() {
 	for _, v := range testCase {
 		s.T().Run(v.name, func(t *testing.T) {
 			s.mock.ExpectBegin()
-			s.mock.ExpectExec(regexp.QuoteMeta("INSERT INTO `users` (`created_at`,`updated_at`,`deleted_at`,`email`,`password`) VALUES (?,?,?,?,?)")).
-				WithArgs(AnyTime{}, AnyTime{}, nil, "", "").
+			s.mock.ExpectExec(regexp.QuoteMeta("UPDATE `users` SET `created_at`=?,`updated_at`=?,`deleted_at`=?,`email`=?,`password`=? WHERE `id` = ? AND `users`.`deleted_at` IS NULL")).
+				WithArgs(AnyTime{}, AnyTime{}, nil, "superb@test.com", "superb123", 1).
 				WillReturnResult(sqlmock.NewResult(1, 1))
 			s.mock.ExpectCommit()
 
@@ -104,6 +104,7 @@ func (s *suiteUsers) TestCreateUser() {
 			e := echo.New()
 			ctx := e.NewContext(request, writter)
 			ctx.SetPath(v.path)
+			ctx.Request().Header.Set("Content-Type", "application/json")
 
 			if s.NoError(s.handler.CreateUser(ctx)) {
 				body := writter.Body.Bytes()
@@ -151,8 +152,8 @@ func (s *suiteUsers) TestCreateUserError() {
 	for _, v := range testCase {
 		s.T().Run(v.name, func(t *testing.T) {
 			s.mock.ExpectBegin()
-			s.mock.ExpectExec(regexp.QuoteMeta("INSERT INTO `users` (`created_at`,`updated_at`,`deleted_at`,`email`,`password`) VALUES (?,?,?,?,?)")).
-				WithArgs(AnyTime{}, AnyTime{}, nil, "", "").
+			s.mock.ExpectExec(regexp.QuoteMeta("UPDATE `users` SET `created_at`=?,`updated_at`=?,`deleted_at`=?,`email`=?,`password`=? WHERE `id` = ? AND `users`.`deleted_at` IS NULL")).
+				WithArgs(AnyTime{}, AnyTime{}, nil, "superb@test.com", "superb123", 1).
 				WillReturnError(errors.New("Internal Server Error"))
 			s.mock.ExpectRollback()
 
@@ -162,6 +163,7 @@ func (s *suiteUsers) TestCreateUserError() {
 			e := echo.New()
 			ctx := e.NewContext(request, writter)
 			ctx.SetPath(v.path)
+			ctx.Request().Header.Set("Content-Type", "application/json")
 
 			if s.NoError(s.handler.CreateUser(ctx)) {
 				body := writter.Body.Bytes()
@@ -297,7 +299,7 @@ func (s *suiteUsers) TestLoginUser() {
 		s.T().Run(v.name, func(t *testing.T) {
 			expectRows := s.mock.NewRows([]string{"id", "email", "password"}).AddRow(1, "orang@test.com", "orang123")
 			s.mock.ExpectQuery(regexp.QuoteMeta("SELECT * FROM `users` WHERE (email = ? AND password = ?) AND `users`.`deleted_at` IS NULL ORDER BY `users`.`id` LIMIT 1")).
-				WithArgs("", "").
+				WithArgs("orang@test.com", "orang123").
 				WillReturnRows(expectRows)
 
 			res, _ := json.Marshal(v.body)
@@ -305,6 +307,7 @@ func (s *suiteUsers) TestLoginUser() {
 			w := httptest.NewRecorder()
 			ctx := echo.New().NewContext(r, w)
 			ctx.SetPath(v.path)
+			ctx.Request().Header.Set("Content-Type", "application/json")
 
 			if s.NoError(s.handler.LoginUser(ctx)) {
 				body := w.Body.Bytes()
