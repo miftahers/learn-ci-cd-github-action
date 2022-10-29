@@ -104,6 +104,7 @@ func (s *suiteUsers) TestCreateUser() {
 			e := echo.New()
 			ctx := e.NewContext(request, writter)
 			ctx.SetPath(v.path)
+			ctx.Request().Header.Set("Content-Type", "application/json")
 
 			if s.NoError(s.handler.CreateUser(ctx)) {
 				body := writter.Body.Bytes()
@@ -162,6 +163,7 @@ func (s *suiteUsers) TestCreateUserError() {
 			e := echo.New()
 			ctx := e.NewContext(request, writter)
 			ctx.SetPath(v.path)
+			ctx.Request().Header.Set("Content-Type", "application/json")
 
 			if s.NoError(s.handler.CreateUser(ctx)) {
 				body := writter.Body.Bytes()
