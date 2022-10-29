@@ -240,6 +240,7 @@ func (s *suiteUsers) TestGetAllUsers() {
 	}
 }
 
+/*
 func (s *suiteUsers) TestGetAllUsersError() {
 	testCase := []struct {
 		name         string
@@ -268,6 +269,7 @@ func (s *suiteUsers) TestGetAllUsersError() {
 		})
 	}
 }
+*/
 
 func (s *suiteUsers) TestLoginUser() {
 	testCase := []struct {
